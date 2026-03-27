@@ -1,65 +1,149 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Neon Digital Clock</title>
-    <style>
-        body {
-            background-color: #1a1a1a;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            font-family: 'Arial Black', sans-serif;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Glassmorphism Clock</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        .clock-container {
-            position: relative;
-            text-align: center;
-        }
+    body {
+      background: #0b0b15;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
 
-        #clock {
-            font-size: 80px;
-            color: #00ffff; /* Cyan Neon */
-            /* 3D Effect using multiple shadows */
-            text-shadow: 
-                3px 3px 0px #ff00ff,   /* Pink Shadow */
-                6px 6px 15px rgba(0, 255, 255, 0.5), /* Cyan Glow */
-                10px 10px 20px rgba(255, 0, 255, 0.3); /* Pink Glow */
-            letter-spacing: 5px;
-        }
-    </style>
+    .scene {
+      width: 100vw;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .blob-blue {
+      position: absolute;
+      width: 480px; height: 480px;
+      background: radial-gradient(circle at 40% 40%, #5b9cf6, #2255cc);
+      bottom: -130px; left: -100px;
+      border-radius: 50%;
+      filter: blur(2px);
+    }
+
+    .blob-pink {
+      position: absolute;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle at 50% 40%, #ff6b9d, #d81b6a);
+      top: -130px; right: -100px;
+      border-radius: 50%;
+      filter: blur(2px);
+    }
+
+    .glass-card {
+      position: relative;
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.10);
+      backdrop-filter: blur(16px) saturate(180%) brightness(1.05);
+      -webkit-backdrop-filter: blur(16px) saturate(180%) brightness(1.05);
+      border-radius: 14px;
+      border: 1.5px solid rgba(255,255,255,0.22);
+      padding: 50px 80px;
+      text-align: center;
+      min-width: 440px;
+      box-shadow:
+        0 8px 32px rgba(0,0,0,0.3),
+        inset 0 1px 0 rgba(255,255,255,0.25),
+        inset 0 -1px 0 rgba(255,255,255,0.05);
+    }
+
+    .day-label {
+      font-family: 'Segoe UI', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 5px;
+      color: rgba(255,255,255,0.65);
+      margin-bottom: 20px;
+      text-transform: uppercase;
+    }
+
+    .time-display {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+    }
+
+    .time-digits {
+      font-family: 'Courier New', monospace;
+      font-size: 80px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -2px;
+      line-height: 1;
+    }
+
+    .time-sep {
+      font-family: 'Courier New', monospace;
+      font-size: 80px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.35);
+      line-height: 1;
+      margin: 0 4px;
+    }
+
+    .ampm {
+      font-family: 'Segoe UI', sans-serif;
+      font-size: 24px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.65);
+      margin-left: 14px;
+      align-self: flex-end;
+      margin-bottom: 12px;
+    }
+  </style>
 </head>
 <body>
-
-    <div class="clock-container">
-        <div id="clock">00:00:00</div>
+  <div class="scene">
+    <div class="blob-blue"></div>
+    <div class="blob-pink"></div>
+    <div class="glass-card">
+      <div class="day-label" id="day">SATURDAY</div>
+      <div class="time-display">
+        <span class="time-digits" id="hours">09</span>
+        <span class="time-sep">:</span>
+        <span class="time-digits" id="minutes">18</span>
+        <span class="time-sep">:</span>
+        <span class="time-digits" id="seconds">03</span>
+        <span class="ampm" id="ampm">PM</span>
+      </div>
     </div>
+  </div>
 
-    <script>
-        function updateTime() {
-            const now = new Date();
-            let h = now.getHours();
-            let m = now.getMinutes();
-            let s = now.getSeconds();
+  <script>
+    const days = ['SUNDAY','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'];
 
-            // Add leading zeros
-            h = (h < 10) ? "0" + h : h;
-            m = (m < 10) ? "0" + m : m;
-            s = (s < 10) ? "0" + s : s;
+    function pad(n) {
+      return String(n).padStart(2, '0');
+    }
 
-            const timeString = h + ":" + m + ":" + s;
-            document.getElementById("clock").innerText = timeString;
-        }
+    function tick() {
+      const now = new Date();
+      document.getElementById('day').textContent = days[now.getDay()];
+      let h = now.getHours();
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12 || 12;
+      document.getElementById('hours').textContent = pad(h);
+      document.getElementById('minutes').textContent = pad(now.getMinutes());
+      document.getElementById('seconds').textContent = pad(now.getSeconds());
+      document.getElementById('ampm').textContent = ampm;
+    }
 
-        // Update every 1 second
-        setInterval(updateTime, 1000);
-        
-        // Run immediately on load
-        updateTime();
-    </script>
-
+    tick();
+    setInterval(tick, 1000);
+  </script>
 </body>
 </html>
